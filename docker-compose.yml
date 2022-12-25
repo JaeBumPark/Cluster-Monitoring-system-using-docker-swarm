@@ -1,0 +1,82 @@
+version: "3.3"
+
+
+services:
+    
+  cadvisor:
+    image: google/cadvisor:v0.27.0 
+    networks:
+      - project-net
+    ports:
+    - "8080:8080"
+    volumes:
+      - /:/rootfs
+      - /var/run/docker.sock:/var/run/docker.sock,readonly
+      - /var/run:/var/run
+      - /sys:/sys
+      - /var/lib/docker/:/var/lib/docker
+
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+  
+  node-export:
+    image: basi/node-exporter:latest
+    networks:
+      - project-net
+    ports:
+    - "9100:9100"
+    volumes:
+      - /proc:/host/proc
+      - /sys:/host/sys
+      - /:/rootfs
+      - /etc/hostname:/etc/host_hostname      
+    hostname: "{{.Node.ID}}"
+
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+   
+  promethues-CA:
+    image:  prom/prometheus:latest
+    networks:
+      - project-net
+    ports:
+    - "9090:9090"
+    configs:
+      - source: pro-config
+        target: /etc/prometheus/prometheus.yml
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager 
+  
+ 
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:4.3.2
+    ports:
+      - "3000:3000"
+    networks:
+      - project-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  project-net:
+    driver: overlay
+
+configs:
+  pro-config:
+    file: $PWD/pro.yml
+
+  
+
