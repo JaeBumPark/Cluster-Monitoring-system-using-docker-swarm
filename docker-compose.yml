@@ -76,7 +76,7 @@ networks:
 
 configs:
   pro-config:
-    file: $PWD/pro.yml
+    file: $PWD/Targets.yml
 
   
 
