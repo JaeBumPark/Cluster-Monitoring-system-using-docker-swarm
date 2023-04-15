@@ -12,10 +12,3 @@ docker service  docker stack deploy -c docker-compose.yml "생성 이름"
 ```
 ####  명령어를 통해 Monitoring Opensource deploy
 
-Promethues에게 Target(Worker node1,2의 Cadvisor, Node-exporter)을 참조하게 하기위해
-
-
-```yaml
-docker service  docker stack deploy -c docker-compose.yml "생성 이름"
-
-```
